@@ -13,7 +13,7 @@ String capitalize(String input) {
 }
 
 class RecipePage extends StatefulWidget {
-  const RecipePage({Key? key}) : super(key: key);
+  const RecipePage(List<String> selectedAllergies, {Key? key}) : super(key: key);//receive the allergies item list
 
   @override
   State<RecipePage> createState() => _RecipePageState();
