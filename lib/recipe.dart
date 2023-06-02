@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:random_recipe_generator/RecipeModel.dart';
+import 'package:random_recipe_generator/shopping_list.dart';
 
 
 String capitalize(String input) {
@@ -205,8 +206,8 @@ class _RecipePageState extends State<RecipePage> {
               height: 50,
               child: ElevatedButton(
                 onPressed: () {
-                  // Code to execute when the button is pressed
-                  print('Button pressed!');
+                  Navigator.push(context, MaterialPageRoute(builder: (context)=>ShoppingList(ingredientList: ingredientList)));
+                  //print('Button pressed!');
                 },
                 style: ButtonStyle(
                   backgroundColor: MaterialStateProperty.all<Color>(
