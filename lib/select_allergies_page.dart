@@ -11,14 +11,14 @@ class SelectAllergiesPage extends StatefulWidget {
 }
 
 class _SelectAllergiesPageState extends State<SelectAllergiesPage> {
-  List<String> selectedAllergies = ["",""];
+  List<String> selectedAllergies = []; //store the selected allergies
 
-  void _allergiesSelection(String food) {
+  void _allergiesSelection(String food) { //selection function:handle selecting food and deselecting food
     setState(() {
-      if (selectedAllergies.contains(food)) {
-        selectedAllergies.remove(food);
+      if (selectedAllergies.contains(food)) { //if nothing
+        selectedAllergies.remove(food); //remove = nothing
       } else {
-        selectedAllergies.add(food);
+        selectedAllergies.add(food); //else add = store food inside
       }
     });
   }
@@ -38,10 +38,10 @@ class _SelectAllergiesPageState extends State<SelectAllergiesPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                FoodButton(
-                  food: 'Egg',
-                  isSelected: selectedAllergies.contains('Egg'),
-                  onTap: () => _allergiesSelection('Egg'),
+                FoodButton(                                       //when user click this button,gestureDetector will detect user click this button
+                  food: 'Egg',                                    //the value "egg"
+                  isSelected: selectedAllergies.contains('Egg'),  //check "'egg" ady inside the list? if yes inside the button color change to blue.
+                  onTap: () => _allergiesSelection('Egg'),        //triggered the button is tapped
                 ),
                 SizedBox(width: 20,),
                 FoodButton(
@@ -104,8 +104,8 @@ class _SelectAllergiesPageState extends State<SelectAllergiesPage> {
 }
 
 
-class FoodButton extends StatelessWidget { //food button
-  final String food;
+class FoodButton extends StatelessWidget {
+  final String food; //declare
   final bool isSelected;
   final VoidCallback onTap;
 
@@ -124,7 +124,7 @@ class FoodButton extends StatelessWidget { //food button
         height: 80,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: isSelected ? Colors.blue : Colors.grey,
+          color: isSelected ? Colors.blue : Colors.grey, //is selected? true= blue,false= grey
         ),
         child: Center(
           child: Text(

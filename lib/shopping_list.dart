@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 class ShoppingList extends StatefulWidget {
-  final List<String> ingredientList;
-
   const ShoppingList({required this.ingredientList});
+
+  final List<String> ingredientList;
 
   @override
   _ShoppingListState createState() => _ShoppingListState();
