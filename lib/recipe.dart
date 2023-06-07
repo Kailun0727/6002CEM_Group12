@@ -9,7 +9,11 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:random_recipe_generator/RecipeModel.dart';
+
+import 'package:random_recipe_generator/shopping_list.dart';
+
 import 'package:random_recipe_generator/recipeBasicInfo.dart';
+
 
 
 String capitalize(String input) {
@@ -20,7 +24,7 @@ String capitalize(String input) {
 }
 
 class RecipePage extends StatefulWidget {
-  const RecipePage({Key? key}) : super(key: key);
+  const RecipePage(List<String> selectedAllergies, {Key? key}) : super(key: key);//receive the allergies item list
 
   @override
   State<RecipePage> createState() => _RecipePageState();
@@ -359,7 +363,8 @@ class _RecipePageState extends State<RecipePage> {
 
                     var searchRecipe = searchRecipeConntroller.text.toString();
 
-                    var apiKey = 'a5329057d3ed4e7a95cc596a972aed58';
+                    //var apiKey = 'a5329057d3ed4e7a95cc596a972aed58';
+                    var apiKey = '430e27f17fa0472194beeb74ebef1697';
                     var url =
                         'https://api.spoonacular.com/recipes/complexSearch?query=$searchRecipe&apiKey=$apiKey';
                     var response = await http.get(Uri.parse(url));
@@ -496,8 +501,8 @@ class _RecipePageState extends State<RecipePage> {
               height: 50,
               child: ElevatedButton(
                 onPressed: () {
-                  // Code to execute when the button is pressed
-                  print('Button pressed!');
+                  Navigator.push(context, MaterialPageRoute(builder: (context)=>ShoppingList(ingredientList: ingredientList)));
+                  //print('Button pressed!');
                 },
                 style: ButtonStyle(
                   backgroundColor: MaterialStateProperty.all<Color>(
