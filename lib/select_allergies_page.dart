@@ -15,6 +15,7 @@ class _SelectAllergiesPageState extends State<SelectAllergiesPage> {
 
   void _allergiesSelection(String food) { //selection function:handle selecting food and deselecting food
     setState(() {
+      String selectedAllergiesInfo = selectedAllergies.join(",");
       if (selectedAllergies.contains(food)) { //if nothing
         selectedAllergies.remove(food); //remove = nothing
       } else {
@@ -59,7 +60,6 @@ class _SelectAllergiesPageState extends State<SelectAllergiesPage> {
             ),
             SizedBox(height: 20),
             Row(
-              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 FoodButton(
                   food: 'Soy',
