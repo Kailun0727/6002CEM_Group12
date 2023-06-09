@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:random_recipe_generator/bookmark_recipe.dart';
 import 'package:random_recipe_generator/select_allergies_page.dart';
 import 'package:random_recipe_generator/firebase_options.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -31,6 +32,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
         routes: {
           Homepage.routeName : (context) => Homepage(),
+          BookmarkRecipe.routeName: (context) => BookmarkRecipe(),
           RecipeBasicInfoPage.routeName : (context) => RecipeBasicInfoPage(),
         },
 
