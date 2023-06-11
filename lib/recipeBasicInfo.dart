@@ -44,11 +44,14 @@ class _RecipeBasicInfoPage extends State<RecipeBasicInfoPage> {
 
   void displayInfo () async {
 
+    final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+    String recipeName = args['name'];
+
     print("Recipe Name : "+name);
 
     var apiKey = 'a5329057d3ed4e7a95cc596a972aed58';
     var url =
-        'https://api.spoonacular.com/recipes/complexSearch?query=$name&apiKey=$apiKey';
+        'https://api.spoonacular.com/recipes/complexSearch?query=$recipeName&apiKey=$apiKey';
     var response = await http.get(Uri.parse(url));
     if (response.statusCode == 200) {
       var data = json.decode(response.body);

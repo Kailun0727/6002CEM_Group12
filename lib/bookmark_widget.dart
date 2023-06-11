@@ -21,7 +21,7 @@ class BookmarkWidget extends StatelessWidget {
             Navigator.of(context).pushNamed(
               RecipeBasicInfoPage.routeName,
               arguments: {
-                mBookmarkModel.bookmarkName
+                name : mBookmarkModel.bookmarkName
               }
             );
           },
