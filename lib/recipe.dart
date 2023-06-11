@@ -5,7 +5,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
 import 'package:firebase_database/firebase_database.dart';
-
+import 'package:random_recipe_generator/select_allergies_page.dart';
+import 'package:random_recipe_generator/homepage.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:random_recipe_generator/RecipeModel.dart';
@@ -47,10 +48,124 @@ class _RecipePageState extends State<RecipePage> {
   List<String> ingredientList = ["1 cup of coffee", "2 spoon of tea"];
   TextEditingController searchRecipeConntroller = new TextEditingController();
 
+
+  initializePage() async{
+
+    print("Selected Allergies: "+selectedAllergiesInfo);
+    var apiKey = 'a5329057d3ed4e7a95cc596a972aed58';
+    var url =
+        'https://api.spoonacular.com/recipes/complexSearch?cuisine=$cuisineType&intolerances=$selectedAllergiesInfo&number=100&apiKey=$apiKey';
+    var response = await http.get(Uri.parse(url));
+    if (response.statusCode == 200) {
+      var data = json.decode(response.body);
+      var results = data['results'] as List<dynamic>;
+
+      if (results != null && results.isNotEmpty) {
+        // Shuffle the list
+        results.shuffle();
+
+        // Generate random numbers without duplication
+        int randomIndex = Random().nextInt(results.length);
+
+        var recipe = results[randomIndex];
+        var id = recipe['id'] as int?;
+        var title = recipe['title'] as String?;
+        var image = recipe['image'] as String?;
+
+        //use api to search recipe ingredient and instruction based on the id
+        var ingredientAndInstruction =
+            'https://api.spoonacular.com/recipes/$id/information?includeNutrition=false&apiKey=$apiKey';
+        var response =
+        await http.get(Uri.parse(ingredientAndInstruction));
+        if (response.statusCode == 200) {
+          var data = json.decode(response.body);
+
+          var instructionStep = data['instructions'] as String;
+
+
+          String modifiedText = instructionStep.replaceAll('\n', '\n\n');
+
+          // Remove content within <>, for example : <ol> , <h1>
+          String filteredInstruction = modifiedText.replaceAll(RegExp(r'<.*?>'), '\n');
+
+
+
+          print(filteredInstruction);
+
+          var extendedIngredients =
+          data['extendedIngredients'] as List<dynamic>;
+
+          if (extendedIngredients != null &&
+              extendedIngredients.isNotEmpty) {
+            //save data from api into list
+
+            //clean the list
+            ingredientList.clear();
+
+            for (var ingredientData in extendedIngredients) {
+              var ingredientAmount =
+              ingredientData['amount'] as double?;
+              var ingredientUnit =
+              ingredientData['unit'] as String?;
+              var ingredientName =
+              ingredientData['name'] as String?;
+
+              var amountValue = ingredientData['amount'].toString();
+              if (ingredientData['amount'] == ingredientData['amount'].roundToDouble()) {
+                // Remove decimal part if it's .0
+                amountValue = ingredientData['amount'].toStringAsFixed(0);
+              }
+
+              ingredientList.add(amountValue +
+                  " " +
+                  ingredientUnit! +
+                  " " +
+                  ingredientName!);
+            }
+            print(ingredientList);
+          }
+
+          if (id != null && title != null && image != null) {
+            RecipeModel recipeModel = RecipeModel(
+              id: id,
+              name: title,
+              imageUrl: image,
+            );
+
+            print(recipeModel.name);
+            print(recipeModel.imageUrl);
+
+            setState(() {
+              name = recipeModel.name;
+              imageUrl = recipeModel.imageUrl;
+              ingredientInfo = ingredientList
+                  .map((ingredient) => capitalize(ingredient))
+                  .join('\n');
+
+
+              instructionInfo = filteredInstruction;
+            });
+          } else {
+            throw Exception(
+                'Invalid data format in the API response');
+          }
+        } else {
+          throw Exception('No recipes found in the response');
+        }
+      } else {
+        throw Exception(
+            'API request failed with status code: ${response.statusCode}');
+      }
+    }
+  }
+
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+
+    initializePage();
 
     setState(() {
       isBookmarked = false;
@@ -64,14 +179,7 @@ class _RecipePageState extends State<RecipePage> {
         mainAxisAlignment: MainAxisAlignment.end,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          FloatingActionButton(
-            onPressed: () async {
-              // Code for the first FAB
-              Navigator.of(context)
-                  .pushNamed(RecipeBasicInfoPage.routeName, arguments: name);
-            },
-            child: Icon(Icons.camera_alt),
-          ),
+
           SizedBox(height: 16), // Add spacing between FABs
           FloatingActionButton(
             onPressed: () async {
@@ -83,7 +191,7 @@ class _RecipePageState extends State<RecipePage> {
 
               var apiKey = 'a5329057d3ed4e7a95cc596a972aed58';
               var url =
-                  'https://api.spoonacular.com/recipes/complexSearch?cuisine=$cuisine&number=100&apiKey=$apiKey';
+                  'https://api.spoonacular.com/recipes/complexSearch?cuisine=$cuisineType&intolerances=$selectedAllergiesInfo&number=100&apiKey=$apiKey';
               var response = await http.get(Uri.parse(url));
               if (response.statusCode == 200) {
                 var data = json.decode(response.body);
@@ -105,23 +213,23 @@ class _RecipePageState extends State<RecipePage> {
                   var ingredientAndInstruction =
                       'https://api.spoonacular.com/recipes/$id/information?includeNutrition=false&apiKey=$apiKey';
                   var response =
-                      await http.get(Uri.parse(ingredientAndInstruction));
+                  await http.get(Uri.parse(ingredientAndInstruction));
                   if (response.statusCode == 200) {
                     var data = json.decode(response.body);
 
                     var instructionStep = data['instructions'] as String;
 
                     String modifiedText =
-                        instructionStep.replaceAll('\n', '\n\n');
+                    instructionStep.replaceAll('\n', '\n\n');
 
                     // Remove content within <>, for example : <ol> , <h1>
                     String filteredInstruction =
-                        modifiedText.replaceAll(RegExp(r'<.*?>'), '\n');
+                    modifiedText.replaceAll(RegExp(r'<.*?>'), '\n');
 
                     print(filteredInstruction);
 
                     var extendedIngredients =
-                        data['extendedIngredients'] as List<dynamic>;
+                    data['extendedIngredients'] as List<dynamic>;
 
                     if (extendedIngredients != null &&
                         extendedIngredients.isNotEmpty) {
@@ -132,7 +240,7 @@ class _RecipePageState extends State<RecipePage> {
 
                       for (var ingredientData in extendedIngredients) {
                         var ingredientAmount =
-                            ingredientData['amount'] as double?;
+                        ingredientData['amount'] as double?;
                         var ingredientUnit = ingredientData['unit'] as String?;
                         var ingredientName = ingredientData['name'] as String?;
 
@@ -215,7 +323,7 @@ class _RecipePageState extends State<RecipePage> {
                     // print("Found the object "+ value['name'] + "Key :"+key + "Url :"+value['imageUrl']);
 
                     var recipe =
-                        await databaseRef.child('recipes').child(recipeKey);
+                    await databaseRef.child('recipes').child(recipeKey);
 
                     var values = recipe.key;
 
@@ -255,7 +363,7 @@ class _RecipePageState extends State<RecipePage> {
                     SnackBar(
                       content: Text('Recipe saved!'),
                       duration:
-                          Duration(seconds: 2), // Adjust the duration as needed
+                      Duration(seconds: 2), // Adjust the duration as needed
                     ),
                   );
 
@@ -272,7 +380,7 @@ class _RecipePageState extends State<RecipePage> {
               var allValues = allSnapshot.snapshot.value;
 
               Map<dynamic, dynamic> allData =
-                  allValues as Map<dynamic, dynamic>;
+              allValues as Map<dynamic, dynamic>;
 
               Set<dynamic> recipeImageUrl = Set<dynamic>();
               Set<dynamic> recipeName = Set<dynamic>();
@@ -306,15 +414,15 @@ class _RecipePageState extends State<RecipePage> {
           Padding(
             padding: const EdgeInsets.only(right: 20.0),
             child: InkWell(
-              onTap: (){
-                Navigator.of(context).pushNamed(
-                  BookmarkRecipe.routeName,
-                );
-              },
+                onTap: (){
+                  Navigator.of(context).pushNamed(
+                    BookmarkRecipe.routeName,
+                  );
+                },
                 child: Icon(
-              Icons.bookmark,
-              color: Colors.white,
-            )),
+                  Icons.bookmark,
+                  color: Colors.white,
+                )),
           )
         ],
       ),
@@ -348,9 +456,9 @@ class _RecipePageState extends State<RecipePage> {
                     var searchRecipe = searchRecipeConntroller.text.toString();
 
                     //var apiKey = 'a5329057d3ed4e7a95cc596a972aed58';
-                    var apiKey = '430e27f17fa0472194beeb74ebef1697';
+                    var apiKey = 'a5329057d3ed4e7a95cc596a972aed58';
                     var url =
-                        'https://api.spoonacular.com/recipes/complexSearch?query=$searchRecipe&apiKey=$apiKey';
+                        'https://api.spoonacular.com/recipes/complexSearch?query=$searchRecipe&cuisine=$cuisineType&intolerances=$selectedAllergiesInfo&apiKey=$apiKey';
                     var response = await http.get(Uri.parse(url));
                     if (response.statusCode == 200) {
                       var data = json.decode(response.body);
@@ -366,23 +474,23 @@ class _RecipePageState extends State<RecipePage> {
                         var ingredientAndInstruction =
                             'https://api.spoonacular.com/recipes/$id/information?includeNutrition=false&apiKey=$apiKey';
                         var response =
-                            await http.get(Uri.parse(ingredientAndInstruction));
+                        await http.get(Uri.parse(ingredientAndInstruction));
                         if (response.statusCode == 200) {
                           var data = json.decode(response.body);
 
                           var instructionStep = data['instructions'] as String;
 
                           String modifiedText =
-                              instructionStep.replaceAll('\n', '\n\n');
+                          instructionStep.replaceAll('\n', '\n\n');
 
                           // Remove content within <>, for example : <ol> , <h1>
                           String filteredInstruction =
-                              modifiedText.replaceAll(RegExp(r'<.*?>'), '\n');
+                          modifiedText.replaceAll(RegExp(r'<.*?>'), '\n');
 
                           print(filteredInstruction);
 
                           var extendedIngredients =
-                              data['extendedIngredients'] as List<dynamic>;
+                          data['extendedIngredients'] as List<dynamic>;
 
                           if (extendedIngredients != null &&
                               extendedIngredients.isNotEmpty) {
@@ -393,14 +501,14 @@ class _RecipePageState extends State<RecipePage> {
 
                             for (var ingredientData in extendedIngredients) {
                               var ingredientAmount =
-                                  ingredientData['amount'] as double?;
+                              ingredientData['amount'] as double?;
                               var ingredientUnit =
-                                  ingredientData['unit'] as String?;
+                              ingredientData['unit'] as String?;
                               var ingredientName =
-                                  ingredientData['name'] as String?;
+                              ingredientData['name'] as String?;
 
                               var amountValue =
-                                  ingredientData['amount'].toString();
+                              ingredientData['amount'].toString();
                               if (ingredientData['amount'] ==
                                   ingredientData['amount'].roundToDouble()) {
                                 // Remove decimal part if it's .0
@@ -524,10 +632,10 @@ class _RecipePageState extends State<RecipePage> {
                           padding: const EdgeInsets.only(top: 25),
                           child: Center(
                               child: Text(
-                            "Ingredient Info",
-                            style: TextStyle(
-                                fontSize: 24, fontWeight: FontWeight.bold),
-                          )),
+                                "Ingredient Info",
+                                style: TextStyle(
+                                    fontSize: 24, fontWeight: FontWeight.bold),
+                              )),
                         ),
 
                         SizedBox(height: 20), // Add some spacing
@@ -576,10 +684,10 @@ class _RecipePageState extends State<RecipePage> {
                           padding: const EdgeInsets.only(top: 25),
                           child: Center(
                               child: Text(
-                            "Instructions",
-                            style: TextStyle(
-                                fontSize: 24, fontWeight: FontWeight.bold),
-                          )),
+                                "Instructions",
+                                style: TextStyle(
+                                    fontSize: 24, fontWeight: FontWeight.bold),
+                              )),
                         ),
 
                         SizedBox(height: 20), // Add some spacing
