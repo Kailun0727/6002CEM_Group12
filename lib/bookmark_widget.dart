@@ -18,10 +18,13 @@ class BookmarkWidget extends StatelessWidget {
       children: [
         InkWell(
           onTap: (){
+            print(mBookmarkModel.bookmarkName);
+
+
             Navigator.of(context).pushNamed(
               RecipeBasicInfoPage.routeName,
               arguments: {
-                name : mBookmarkModel.bookmarkName
+                "name" : mBookmarkModel.bookmarkName
               }
             );
           },
