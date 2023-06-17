@@ -29,11 +29,11 @@ class MyApp extends StatelessWidget {
 
     return MaterialApp(
         routes: {
-          RecipeBasicInfoPage.routeName : (context) => RecipeBasicInfoPage(),
+          RecipeBasicInfoPage.routeName : (context) => SelectAllergiesPage(),
         },
 
 
-        home: RecipePage(),
+        home: SelectAllergiesPage(),
       debugShowCheckedModeBanner: false,
     );
 

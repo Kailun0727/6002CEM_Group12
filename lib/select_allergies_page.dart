@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:random_recipe_generator/recipe.dart';
 
-
+String selectedAllergiesInfo = "";
 
 class SelectAllergiesPage extends StatefulWidget {
   SelectAllergiesPage({Key? key}) : super(key: key);
@@ -15,7 +15,7 @@ class _SelectAllergiesPageState extends State<SelectAllergiesPage> {
 
   void _allergiesSelection(String food) { //selection function:handle selecting food and deselecting food
     setState(() {
-      String selectedAllergiesInfo = selectedAllergies.join(",");
+      selectedAllergiesInfo = selectedAllergies.join(",");
       if (selectedAllergies.contains(food)) { //if nothing
         selectedAllergies.remove(food); //remove = nothing
       } else {
