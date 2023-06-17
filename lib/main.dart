@@ -1,10 +1,12 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:random_recipe_generator/bookmark_recipe.dart';
 import 'package:random_recipe_generator/select_allergies_page.dart';
 import 'package:random_recipe_generator/firebase_options.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:random_recipe_generator/recipe.dart';
 import 'package:random_recipe_generator/recipeBasicInfo.dart';
+import 'package:random_recipe_generator/homepage.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -29,11 +31,13 @@ class MyApp extends StatelessWidget {
 
     return MaterialApp(
         routes: {
-          RecipeBasicInfoPage.routeName : (context) => SelectAllergiesPage(),
+          Homepage.routeName : (context) => Homepage(),
+          BookmarkRecipe.routeName: (context) => BookmarkRecipe(),
+          RecipeBasicInfoPage.routeName : (context) => RecipeBasicInfoPage(),
         },
 
 
-        home: SelectAllergiesPage(),
+        home: Homepage(),
       debugShowCheckedModeBanner: false,
     );
 

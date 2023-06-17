@@ -9,7 +9,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:random_recipe_generator/recipe.dart';
 import 'package:random_recipe_generator/RecipeModel.dart';
-
+import 'package:random_recipe_generator/bookmark_recipe.dart';
 
 String capitalize(String input) {
   if (input.isEmpty) {
@@ -32,23 +32,27 @@ class _RecipeBasicInfoPage extends State<RecipeBasicInfoPage> {
 
   FirebaseStorage storage = FirebaseStorage.instance;
 
-
   bool isBookmarked = true;
   String imageUrl = "https://spoonacular.com/recipeImages/654857-312x231.jpg";
-  String recipeName ="";
   String ingredientInfo = "";
   String instructionInfo = "";
+  String recipeName ="";
   String cuisine = "chinese";
   String amount = "";
   List<String> ingredientList = ["1 cup of coffee","2 spoon of tea"];
 
-  void displayInfo () async {
+   displayInfo () async{
 
-    print("Recipe Name : "+name);
+    final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+
+    recipeName = args['name'];
+
+    print("Recipe Name : "+recipeName);
+
 
     var apiKey = 'a5329057d3ed4e7a95cc596a972aed58';
     var url =
-        'https://api.spoonacular.com/recipes/complexSearch?query=$name&apiKey=$apiKey';
+        'https://api.spoonacular.com/recipes/complexSearch?query=$recipeName&apiKey=$apiKey';
     var response = await http.get(Uri.parse(url));
     if (response.statusCode == 200) {
       var data = json.decode(response.body);
@@ -77,8 +81,7 @@ class _RecipeBasicInfoPage extends State<RecipeBasicInfoPage> {
 
           print(filteredInstruction);
 
-          var extendedIngredients =
-          data['extendedIngredients'] as List<dynamic>;
+          var extendedIngredients = data['extendedIngredients'] as List<dynamic>;
 
           if (extendedIngredients != null &&
               extendedIngredients.isNotEmpty) {
@@ -121,7 +124,7 @@ class _RecipeBasicInfoPage extends State<RecipeBasicInfoPage> {
             print(recipeModel.imageUrl);
 
             setState(() {
-              name = recipeModel.name;
+              recipeName = recipeModel.name;
               imageUrl = recipeModel.imageUrl;
               ingredientInfo = ingredientList
                   .map((ingredient) => capitalize(ingredient))
@@ -144,21 +147,11 @@ class _RecipeBasicInfoPage extends State<RecipeBasicInfoPage> {
     }
   }
 
-
-  @override
-  void initState()  {
-    // TODO: implement initState
-    super.initState();
-
-    displayInfo();
-
-  }
-
   @override
   Widget build(BuildContext context) {
 
 
-
+    displayInfo();
 
     return Scaffold(
       floatingActionButton: FloatingActionButton(
@@ -263,7 +256,7 @@ class _RecipeBasicInfoPage extends State<RecipeBasicInfoPage> {
 
             Center(
               child: Text(
-                name,
+                recipeName,
                 style: TextStyle(
                   fontStyle: FontStyle.italic,
                   fontSize: 24,
