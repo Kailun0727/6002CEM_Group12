@@ -18,6 +18,8 @@ class _SelectAllergiesPageState extends State<SelectAllergiesPage> {
   void _allergiesSelection(String food) { //selection function:handle selecting food and deselecting food
     setState(() {
 
+      selectedAllergiesInfo = selectedAllergies.join(",");
+
       if (selectedAllergies.contains(food)) { //if nothing
         selectedAllergies.remove(food); //remove = nothing
       } else {
@@ -92,12 +94,28 @@ class _SelectAllergiesPageState extends State<SelectAllergiesPage> {
 
               ),
               SizedBox(height: 20),
-              const Text("Allergies Item Selected:", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
-              Column(
-                children:
-                selectedAllergies.map((food) {
-                  return Text(food, style: TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.bold));
-                }).toList(),
+              Container(
+                decoration: BoxDecoration(
+                    color: Colors.grey,
+                    boxShadow: [
+                      BoxShadow(
+                        blurRadius: 4,
+                        spreadRadius: 4,
+                        color: Colors.grey.withOpacity(0.2),
+                      )
+                    ]
+                ),
+                child: Column(
+                  children: [
+                    const Text("Allergies Item Selected:", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
+                    Column(
+                      children:
+                      selectedAllergies.map((food) {
+                        return Text(food, style: TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.bold));
+                      }).toList(),
+                    ),
+                  ],
+                )
               ),
             ],
           ),
